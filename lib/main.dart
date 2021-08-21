@@ -1,8 +1,8 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'question.dart';
+import 'quiz_brain.dart';
 
+QuizBrain quizBrain = new QuizBrain();
 void main() => runApp(Quizzler());
 
 class Quizzler extends StatelessWidget {
@@ -28,41 +28,11 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  //Dart has lists, works like an array
-  //Notice that widgets which accept multiple children actually accept Lists
   List<Icon> scoreKeeper = [];
-
-  Map<String, bool> questions = {
-    'You can lead a cow down stairs but not up stairs.': false,
-    'Approximately one quarter of human bones are in the feet.': true,
-    'A slug\'s blood is green.': true
-  };
-
-  List<Question> _questions = [
-    Question(
-      q: 'You can lead a cow down stairs but not up stairs.',
-      a: false,
-    ),
-    Question(
-      q: 'Approximately one quarter of human bones are in the feet.',
-      a: true,
-    ),
-    Question(
-      q: 'A slug\'s blood is green.',
-      a: true,
-    )
-  ];
-
-  Question q1 = Question(
-      q: 'You can lead a cow down stairs but not up stairs.', a: false);
-  Question q2 = Question(
-      q: 'Approximately one quarter of human bones are in the feet.', a: true);
-  Question q3 = Question(q: 'A slug\'s blood is green.', a: true);
-
   int questionNumber = 0;
 
   void advanceQuestions() {
-    if (questionNumber < questions.length - 1) {
+    if (questionNumber < quizBrain.questionBank.length - 1) {
       questionNumber++;
     }
   }
@@ -79,7 +49,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questions.keys.elementAt(questionNumber),
+                quizBrain.questionBank[questionNumber].questionText,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -108,7 +78,8 @@ class _QuizPageState extends State<QuizPage> {
               onPressed: () {
                 //needs this wrapper, as it will trigger a UI change
                 setState(() {
-                  bool _key = questions.values.elementAt(questionNumber);
+                  bool _key =
+                      quizBrain.questionBank[questionNumber].questionAnswer;
                   if (_key == true) {
                     print('Correct');
                   } else {
