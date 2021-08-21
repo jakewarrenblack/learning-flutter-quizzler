@@ -35,9 +35,15 @@ class QuizBrain {
         a: true),
   ];
 
-  void nextQuestion() {
-    if (_questionNumber < _questionBank.length) {
+  void reset() {
+    _questionNumber = 0;
+  }
+
+  void nextQuestion(context) {
+    if (_questionNumber < _questionBank.length - 1) {
       _questionNumber++;
+    } else {
+      context.showQuestionDialog();
     }
   }
 

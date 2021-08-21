@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:flutter_alert/flutter_alert.dart';
 
 QuizBrain quizBrain = new QuizBrain();
 void main() => runApp(Quizzler());
@@ -29,6 +30,49 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
+
+  void checkAnswer(bool userPickedAnswer) {
+    //needs this wrapper, as it will trigger a UI change
+    setState(() {
+      if (userPickedAnswer == quizBrain.getQuestionAnswer()) {
+        scoreKeeper.add(
+          Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        );
+      } else {
+        scoreKeeper.add(
+          Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        );
+      }
+      quizBrain.nextQuestion(this);
+    });
+  }
+
+  void showQuestionDialog() {
+    showAlert(
+      context: context,
+      title: "FINISHED!",
+      body: "You've reached the end of the quiz!",
+      actions: [
+        AlertAction(
+          text: "Restart",
+          isDestructiveAction: true,
+          onPressed: () {
+            setState(() {
+              quizBrain.reset();
+            });
+          },
+        ),
+      ],
+      cancelable: false,
+    );
+    scoreKeeper.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,17 +113,8 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //needs this wrapper, as it will trigger a UI change
-                setState(() {
-                  bool _key = quizBrain.getQuestionAnswer();
-                  if (_key == true) {
-                    print('Correct');
-                  } else {
-                    print('Incorrect');
-                  }
-                  quizBrain.nextQuestion();
-                });
                 //The user picked true.
+                checkAnswer(true);
               },
             ),
           ),
@@ -101,15 +136,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                setState(() {
-                  bool _key = quizBrain.getQuestionAnswer();
-                  if (_key == false) {
-                    print('Correct');
-                  } else {
-                    print('Incorrect');
-                  }
-                  quizBrain.nextQuestion();
-                });
+                checkAnswer(false);
                 //The user picked false.
               },
             ),
