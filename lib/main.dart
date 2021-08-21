@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(Quizzler());
@@ -25,6 +27,24 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  //Dart has lists, works like an array
+  //Notice that widgets which accept multiple children actually accept Lists
+  List<Icon> scoreKeeper = [];
+
+  Map<String, bool> questions = {
+    'You can lead a cow down stairs but not up stairs.': false,
+    'Approximately one quarter of human bones are in the feet.': true,
+    'A slug\'s blood is green.': true
+  };
+
+  int questionNumber = 0;
+
+  void advanceQuestions() {
+    if (questionNumber < questions.length - 1) {
+      questionNumber++;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +57,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                questions.keys.elementAt(questionNumber),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -50,9 +70,12 @@ class _QuizPageState extends State<QuizPage> {
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(15.0),
-            child: FlatButton(
-              textColor: Colors.white,
-              color: Colors.green,
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  Colors.green,
+                ),
+              ),
               child: Text(
                 'True',
                 style: TextStyle(
@@ -61,6 +84,17 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                //needs this wrapper, as it will trigger a UI change
+                setState(() {
+                  bool _key = questions.values.elementAt(questionNumber);
+                  if (_key == true) {
+                    print('Correct');
+                  } else {
+                    print('Incorrect');
+                  }
+
+                  advanceQuestions();
+                });
                 //The user picked true.
               },
             ),
@@ -69,8 +103,12 @@ class _QuizPageState extends State<QuizPage> {
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(15.0),
-            child: FlatButton(
-              color: Colors.red,
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  Colors.red,
+                ),
+              ),
               child: Text(
                 'False',
                 style: TextStyle(
@@ -79,12 +117,20 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                setState(() {
+                  advanceQuestions();
+                });
                 //The user picked false.
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          //'children' property wants a list of type <widget>, scoreKeeper **is** a list of type <icon>, which is a widget, so this works fine
+          //Note that we could choose not to specify a type, and just leave it as a plain 'dynamic' list
+          //Just safer to specify the type - means we can't go wrong, it won't let us
+          children: scoreKeeper,
+        ),
       ],
     );
   }
