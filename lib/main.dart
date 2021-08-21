@@ -29,13 +29,6 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
-  int questionNumber = 0;
-
-  void advanceQuestions() {
-    if (questionNumber < quizBrain.questionBank.length - 1) {
-      questionNumber++;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +42,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                quizBrain.questionBank[questionNumber].questionText,
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -78,15 +71,13 @@ class _QuizPageState extends State<QuizPage> {
               onPressed: () {
                 //needs this wrapper, as it will trigger a UI change
                 setState(() {
-                  bool _key =
-                      quizBrain.questionBank[questionNumber].questionAnswer;
+                  bool _key = quizBrain.getQuestionAnswer();
                   if (_key == true) {
                     print('Correct');
                   } else {
                     print('Incorrect');
                   }
-
-                  advanceQuestions();
+                  quizBrain.nextQuestion();
                 });
                 //The user picked true.
               },
@@ -111,7 +102,13 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 setState(() {
-                  advanceQuestions();
+                  bool _key = quizBrain.getQuestionAnswer();
+                  if (_key == false) {
+                    print('Correct');
+                  } else {
+                    print('Incorrect');
+                  }
+                  quizBrain.nextQuestion();
                 });
                 //The user picked false.
               },
